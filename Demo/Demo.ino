@@ -5,10 +5,10 @@
 :Revision: 1
 :License: Public Domain
 thanks to:
-  http://arduinoenonsolo.blogspot.it/2012/12/orologio-con-arduino-e-il-ds1307.html
-  http://www.mauroalfieri.it/
-  http://www.danielealberti.it/
-  http://www.maffucci.it/
+  http://a...content-available-to-author-only...t.it/2012/12/orologio-con-arduino-e-il-ds1307.html
+  http://w...content-available-to-author-only...i.it/
+  http://w...content-available-to-author-only...i.it/
+  http://w...content-available-to-author-only...i.it/
   My electronics laboratory professor "Perito Carli"  
 */
 //************libraries**************//
@@ -50,7 +50,8 @@ int yearupg=2019;
 int monthupg;
 int dayupg;
 int menu =0;
-int foodAmount = 100;
+//int foodAmount = 100;
+bool foodTimeWithAmount[32][24][61];
 
 //Servo servo;
 
@@ -58,6 +59,9 @@ void setup()
 {
  // servo.attach(2);
  // servo.write(0);
+ int ch1[4] = {0}; 
+
+   // memset(foodTimeWithAmount, 0, sizeof(foodTimeWithAmount));
   lcd.begin();
   lcd.backlight();
   lcd.clear();
@@ -185,10 +189,17 @@ void loop()
     menu=0;
     }
     delay(100);
+/*
     if ( yearupg == now.year() && monthupg == now.month() && dayupg == now.day() && hourupg == now.hour() && minupg == now.minute()) {
       //ServeFood();
       }
-    }  
+*/
+    if (foodTimeWithAmount[now.day()][now.hour()][now.minute()] > 0) {
+        //ServeFood();
+    }
+}  
+
+
 
 /*void ServeFood() {
   servo.write(90);
@@ -352,27 +363,29 @@ void DisplaySetDay()
 void DisplayAmount()
 {
 // Setting the amount
+    int foodAmount = foodTimeWithAmount[dayupg][hourupg][minupg];
+
   lcd.clear();
   if(digitalRead(P2)==HIGH)
   {
-    if (foodAmount==500)
+    if (foodAmount==0)
     {
       foodAmount=1;
     }
     else
     {
-      foodAmount=foodAmount+1;
+      foodAmount=0;
     }
   }
    if(digitalRead(P3)==HIGH)
   {
-    if (foodAmount <= 1)
+    if (foodAmount==0)
     {
       foodAmount=1;
     }
     else
     {
-      foodAmount=foodAmount-1;
+      foodAmount=0;
     }
   }
   lcd.setCursor(0,0);
@@ -381,6 +394,7 @@ void DisplayAmount()
   lcd.print(foodAmount,DEC);
   delay(5000);
   menu = 0;
+  foodTimeWithAmount[dayupg][hourupg][minupg] = foodAmount;
 }
 
 /*void StoreAgg()
