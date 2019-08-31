@@ -171,7 +171,12 @@ void loop()
     Serial.print(now.second(), DEC);
     Serial.println();
     Serial.println();
-    delay(1000);
+    
+
+    if (now.second() == 0) {
+      foodServed = false;
+    }
+    //delay(3000);
 
     if (foodTime[now.hour()][now.minute()] > 0) {
       if (foodServed == false ) {
@@ -180,9 +185,7 @@ void loop()
         handleServo();
       }
     }
-    else {
-      foodServed = false;
-    }
+   
     
     Blynk.run();
 }
