@@ -1,0 +1,179 @@
+#define BLYNK_PRINT Serial
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include "RTClib.h"
+#include <Servo.h>
+//#define ServoPin 14
+RTC_DS1307 RTC;
+RTC_DS3231 rtc;
+
+Servo myservo;  // create servo object to control a servo
+
+int potpin = 0;  // analog pin used to connect the potentiometer
+int val; 
+
+char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
+
+
+// You should get Auth Token in the Blynk App.
+// Go to the Project Settings (nut icon).
+char auth[] = "f9DT6chbi_PwR_-z-JkjHRNdGfAB8psQ";
+
+// Your WiFi credentials.
+// Set password to "" for open networks.
+char ssid[] = "satadal";
+char pass[] = "satadal1996";
+
+
+int foodTime[32][25] = {0};
+int Day, Hour, Amount;
+bool foodServed;
+
+
+//Day
+  BLYNK_WRITE(V0)
+{
+  int pinValue = param.asInt(); // assigning incoming value from pin V1 to a variable
+  // You can also use:
+  // String i = param.asStr();
+  // double d = param.asDouble();
+//  Serial.print("V0 Day value is: ");
+ // Serial.println(pinValue);
+  Day = pinValue;
+}
+//Hour
+BLYNK_WRITE(V1)
+{
+  int pinValue = param.asInt(); // assigning incoming value from pin V1 to a variable
+  // You can also use:
+  // String i = param.asStr();
+  // double d = param.asDouble();
+ // Serial.print("V1 Hour value is: ");
+//  Serial.println(pinValue);
+  Hour = pinValue;
+}
+
+//Amount
+
+BLYNK_WRITE(V2)
+{
+  int pinValue = param.asInt(); // assigning incoming value from pin V1 to a variable
+  // You can also use:
+  // String i = param.asStr();
+  // double d = param.asDouble();
+ // Serial.print("V2 Amount value is: ");
+ // Serial.println(pinValue);
+  Amount = pinValue;
+}
+
+
+
+BLYNK_WRITE(V5)
+{
+  int buttonState = param.asInt(); // assigning incoming value from pin V1 to a variable
+  // You can also use:
+  // String i = param.asStr();
+  // double d = param.asDouble();
+  Serial.print("V5 Button value is: ");
+  Serial.println(buttonState);
+  if (buttonState == 1) {
+    // Set time into array for time set
+    Serial.print("From android Day : ");
+    Serial.println(Day);
+     Serial.print("From android Hour : ");
+     Serial.println(Hour);
+      Serial.print("From android Amount: ");
+      Serial.println(Amount);
+    //Serial.println();
+    foodTime[Day][Hour] = Amount;
+  }
+  
+}
+BLYNK_WRITE(V3)
+{
+  int buttonState = param.asInt(); // assigning incoming value from pin V1 to a variable
+  // You can also use:
+  // String i = param.asStr();
+  // double d = param.asDouble();
+  Serial.print("V3 Button value is: ");
+  Serial.println(buttonState);
+  if (buttonState == 1) {
+    handleServo();
+  }
+  
+}
+
+
+void setup()
+{
+  foodServed = false;
+  Serial.begin(9600);
+  
+  myservo.attach(2); 
+  myservo.write(0);
+  RTC.begin();
+  DateTime now = RTC.now();
+  //delay(3000); 
+  //D4
+    if (! RTC.isrunning()) {
+    Serial.println("RTC is NOT running!");
+    // Set the date and time at compile time
+    RTC.adjust(DateTime(__DATE__, __TIME__));
+  }
+   //RTC.adjust(DateTime(__DATE__, __TIME__)); //removing "//" to adjust the time
+    // The default display shows the date and time
+
+
+  Blynk.begin(auth, ssid, pass);
+  // You can also specify server:
+  //Blynk.begin(auth, ssid, pass, "blynk-cloud.com", 80);
+  //Blynk.begin(auth, ssid, pass, IPAddress(192,168,1,100), 8080);
+
+
+}
+void handleServo(){
+
+  myservo.write(180);   // tell servo to go to position
+  delay(1500);
+  myservo.write(0); 
+
+}
+
+void loop()
+{
+   DateTime now = rtc.now();
+    Serial.print(now.year(), DEC);
+    val=now.year();
+    Serial.print(val);
+    Serial.print('/');
+    Serial.print(now.month(), DEC);
+    Serial.print('/');
+    Serial.print(now.day(), DEC);
+    Serial.print(" (");
+    Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
+    Serial.print(") ");
+    Serial.print(now.hour(), DEC);
+    Serial.print(':');
+    Serial.print(now.minute(), DEC);
+    Serial.print(':');
+    Serial.print(now.second(), DEC);
+    Serial.println();
+    Serial.println();
+    //delay(3000);
+
+    if (foodTime[now.day()][now.hour()] > 0) {
+      if (foodServed == false ) {
+        // Call handle servo
+        foodServed = true;
+        handleServo();
+      }
+    }
+    else {
+      foodServed = false;
+    }
+    
+    Blynk.run();
+
+  
+  
+}
