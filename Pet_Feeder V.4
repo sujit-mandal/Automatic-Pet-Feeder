@@ -9,11 +9,7 @@ RTC_DS3231 rtc;
 
 Servo myservo;  // create servo object to control a servo
 
-int potpin = 0;  // analog pin used to connect the potentiometer
 int foodlevel=4000; 
-
-char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
@@ -135,7 +131,7 @@ void setup()
    //RTC.adjust(DateTime(__DATE__, __TIME__)); //removing "//" to adjust the time
     // The default display shows the date and time
 
-  //Blynk.virtualWrite(V6, 4000);
+  Blynk.virtualWrite(V6, 4000);
   Blynk.begin(auth, ssid, pass);
   // You can also specify server:
   //Blynk.begin(auth, ssid, pass, "blynk-cloud.com", 80);
@@ -147,7 +143,7 @@ void handleServo(){
 
   myservo.write(180);   // tell servo to go to position
   delay(1500);
-  value(1000);
+  value(100);
   myservo.write(0); 
 
 }
@@ -165,14 +161,13 @@ void value(int a)
 void loop()
 {
    DateTime now = rtc.now();
+    Serial.print("Date ");
     Serial.print(now.year(), DEC);
     Serial.print('/');
     Serial.print(now.month(), DEC);
     Serial.print('/');
     Serial.print(now.day(), DEC);
-    Serial.print(" (");
-    Serial.print(daysOfTheWeek[now.dayOfTheWeek()]);
-    Serial.print(") ");
+    Serial.print("Time ");
     Serial.print(now.hour(), DEC);
     Serial.print(':');
     Serial.print(now.minute(), DEC);
@@ -180,7 +175,12 @@ void loop()
     Serial.print(now.second(), DEC);
     Serial.println();
     Serial.println();
-    delay(1000);
+    
+
+    if (now.second() == 0) {
+      foodServed = false;
+    }
+    //delay(3000);
 
     if (foodTime[now.hour()][now.minute()] > 0) {
       if (foodServed == false ) {
@@ -189,9 +189,7 @@ void loop()
         handleServo();
       }
     }
-    else {
-      foodServed = false;
-    }
+   
     
     Blynk.run();
 }
