@@ -1,0 +1,109 @@
+#define BLYNK_PRINT Serial
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include "RTClib.h"
+#include <Servo.h>
+RTC_DS1307 RTC;
+RTC_DS3231 rtc;
+Servo myservo;  
+char auth[] = "f9DT6chbi_PwR_-z-JkjHRNdGfAB8psQ";
+char ssid[] = "satadal";
+char pass[] = "satadal1996";
+
+
+bool foodTime[25][61] = {0};
+int Day, Hour,Minute, Amount;
+bool foodServed;
+
+
+//Day
+  BLYNK_WRITE(V0)
+{
+  int pinValue = param.asInt();
+  Day = pinValue;
+}
+//Hour
+BLYNK_WRITE(V1)
+{
+  int pinValue = param.asInt(); 
+  Hour = pinValue;
+}
+BLYNK_WRITE(V4)
+{
+  int pinValue = param.asInt(); 
+
+  Minute = pinValue;
+}
+
+
+BLYNK_WRITE(V2)
+{
+  int pinValue = param.asInt(); 
+  Amount = pinValue;
+}
+
+BLYNK_WRITE(V5)
+{
+  int buttonState = param.asInt(); 
+  if (buttonState == 1) {
+    foodTime[Hour][Minute] = true;
+  }
+  
+}
+BLYNK_WRITE(V3)
+{
+  int buttonState = param.asInt(); 
+  Serial.print("V3 Button value is: ");
+  Serial.println(buttonState);
+  if (buttonState == 1) {
+    handleServo();
+  }
+  
+}
+
+
+void setup()
+{
+  foodServed = false;
+  Serial.begin(9600);
+  
+  myservo.attach(2); 
+  myservo.write(0);
+  RTC.begin();
+  DateTime now = RTC.now();
+    if (! RTC.isrunning()) {
+    Serial.println("RTC is NOT running!");
+    // Set the date and time at compile time
+    RTC.adjust(DateTime(__DATE__, __TIME__));
+  }
+   //RTC.adjust(DateTime(__DATE__, __TIME__)); //removing "//" to adjust the time
+
+  Blynk.begin(auth, ssid, pass);
+
+}
+void handleServo(){
+
+  myservo.write(180);   // tell servo to go to position
+  delay(1500);
+  myservo.write(0); 
+
+}
+
+void loop()
+{
+   DateTime now = rtc.now();
+
+    if (foodTime[now.hour()][now.minute()] == true) {
+      if (foodServed == false ) {
+        // Call handle servo
+        foodServed = true;
+        handleServo();
+      }
+    }
+    else {
+      foodServed = false;
+    }
+    
+    Blynk.run();
+    
+}
