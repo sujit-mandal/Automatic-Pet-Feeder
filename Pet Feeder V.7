@@ -1,0 +1,519 @@
+#define BLYNK_PRINT Serial
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include "RTClib.h"
+#include <Servo.h>
+#include "HX711.h"
+RTC_DS1307 RTC;
+RTC_DS3231 rtc;
+
+Servo myservo;  // create servo object to control a servo
+HX711 scale;
+const int SCALE_DOUT_PIN = D5;
+const int SCALE_SCK_PIN = D6;
+
+int foodlevel = 4000;
+int i;
+
+// You should get Auth Token in the Blynk App.
+// Go to the Project Settings (nut icon).
+char auth[] = "c0da13b5a541449fa71d6a99c475874f";
+
+// Your WiFi credentials.
+// Set password to "" for open networks.
+char ssid[] = "Free Wi-Fi";
+char pass[] = "callofduty";
+
+
+// Structure FoodMeal for
+struct FoodMeal {
+  int Hour, Minute, Amount;
+
+  FoodMeal() {
+    Hour = 0;
+    Minute = 0;
+    Amount = 0;
+  }
+
+  bool operator == (FoodMeal f) {
+    if (this->Hour == f.Hour && this->Minute == f.Minute) {
+      return true;
+    }
+    return false;
+  }
+
+  bool isEmpty() {
+    if (this->Hour == 0 && this->Minute == 0 && this->Amount == 0) {
+      return true;
+    }
+    return false;
+  }
+
+};
+
+FoodMeal foodTime[32][3], FM1, FM2, FM3, currentTime;
+
+int Month, Day;
+bool foodServed;
+//Month Extract
+BLYNK_WRITE(V0) {
+  switch (param.asInt())
+  {
+      int pinvalue;
+    case 1:
+      Serial.println("Item 1 selected");
+      pinvalue = param.asInt();
+      Month = pinvalue;
+      break;
+    case 2:
+      Serial.println("Item 2 selected");
+      pinvalue = param.asInt();
+      Month = pinvalue;
+      break;
+    case 3:
+      Serial.println("Item 3 selected");
+      pinvalue = param.asInt();
+      Month = pinvalue;
+      break;
+    case 4:
+      Serial.println("Item 4 selected");
+      pinvalue = param.asInt();
+      Month = pinvalue;
+      break;
+    case 5:
+      Serial.println("Item 5 selected");
+      pinvalue = param.asInt();
+      Month = pinvalue;
+      break;
+    case 6:
+      Serial.println("Item 6 selected");
+      pinvalue = param.asInt();
+      Month = pinvalue;
+      break;
+    case 7:
+      Serial.println("Item 7 selected");
+      pinvalue = param.asInt();
+      Month = pinvalue;
+      break;
+    case 8:
+      Serial.println("Item 8 selected");
+      pinvalue = param.asInt();
+      Month = pinvalue;
+      break;
+    case 9:
+      Serial.println("Item 9 selected");
+      pinvalue = param.asInt();
+      Month = pinvalue;
+      break;
+    case 10:
+      Serial.println("Item 10 selected");
+      pinvalue = param.asInt();
+      Month = pinvalue;
+      break;
+    case 11:
+      Serial.println("Item 11 selected");
+      pinvalue = param.asInt();
+      Month = pinvalue;
+      break;
+    case 12:
+      Serial.println("Item 12 selected");
+      pinvalue = param.asInt();
+      Month = pinvalue;
+      break;
+
+    default:
+      Serial.println("Unknown item selected");
+  }
+}
+//Day Extract
+BLYNK_WRITE(V1) {
+  switch (param.asInt())
+  {
+      int pinvalue;
+    case 1:
+      Serial.println("Item 1 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 2:
+      Serial.println("Item 2 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 3:
+      Serial.println("Item 3 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 4:
+      Serial.println("Item 4 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 5:
+      Serial.println("Item 5 selected");
+      pinvalue = param.asInt();
+      break;
+    case 6:
+      Serial.println("Item 6 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 7:
+      Serial.println("Item 7 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 8:
+      Serial.println("Item 8 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 9:
+      Serial.println("Item 9 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 10:
+      Serial.println("Item 10 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 11:
+      Serial.println("Item 11 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 12:
+      Serial.println("Item 12 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 13: // Item 3
+      Serial.println("Item 13 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 14:
+      Serial.println("Item 14 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 15:
+      Serial.println("Item 15 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 16:
+      Serial.println("Item 16 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 17:
+      Serial.println("Item 17 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 18:
+      Serial.println("Item 18 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 19:
+      Serial.println("Item 19 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 20:
+      Serial.println("Item 20 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 21:
+      Serial.println("Item 21 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 22:
+      Serial.println("Item 22 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 23:
+      Serial.println("Item 23 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 24:
+      Serial.println("Item 24 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 25:
+      Serial.println("Item 25 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 26:
+      Serial.println("Item 26 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 27:
+      Serial.println("Item 27 selected");
+      pinvalue = param.asInt();
+      break;
+    case 28:
+      Serial.println("Item 28 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 29:
+      Serial.println("Item 29 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 30:
+      Serial.println("Item 30 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+    case 31:
+      Serial.println("Item 31 selected");
+      pinvalue = param.asInt();
+      Day = pinvalue;
+      break;
+
+    default:
+      Serial.println("Unknown item selected");
+  }
+}
+
+//-------First Meal--------
+// Hour, Minute Extract
+BLYNK_WRITE(V2) {
+  TimeInputParam t(param);
+  FM1.Hour = t.getStartHour();
+  FM1.Minute = t.getStartMinute();
+  /*Serial.print("Time is: ");
+    Serial.print(FM1.Hour);
+    Serial.print(":");
+    Serial.print(FM1.Minute);*/
+
+}
+// Amount Extract
+BLYNK_WRITE(V3) {
+  int pinvalue = param.asInt(); // assigning incoming value from pin V1 to a variable
+  FM1.Amount = pinvalue;
+  //Serial.print("Amount is: ");
+  //Serial.print(FM1.Amount);
+}
+
+//-------Second Meal--------
+// Hour, Minute Extract
+BLYNK_WRITE(V4) {
+  TimeInputParam t(param);
+  FM2.Hour = t.getStartHour();
+  FM2.Minute = t.getStartMinute();
+}
+// Amount Extract
+BLYNK_WRITE(V5) {
+  int pinvalue = param.asInt(); // assigning incoming value from pin V1 to a variable
+  FM2.Amount = pinvalue;
+}
+
+//-------Third Meal--------
+// Hour, Minute Extract
+BLYNK_WRITE(V6) {
+  TimeInputParam t(param);
+  FM3.Hour = t.getStartHour();
+  FM3.Minute = t.getStartMinute();
+}
+// Amount Extract
+BLYNK_WRITE(V7) {
+  int pinvalue = param.asInt(); // assigning incoming value from pin V1 to a variable
+  FM3.Amount = pinvalue;
+}
+
+
+// Save Button
+BLYNK_WRITE(V8) {
+  int buttonState = param.asInt(); // assigning incoming value from pin V1 to a variable
+
+  Serial.print("V7 Button value is: ");
+  Serial.println(buttonState);
+  if (buttonState == 1) {
+
+    if (FM1.isEmpty() && FM2.isEmpty() && FM3.isEmpty()) {
+      Blynk.notify("Feed Time is Empty");
+    }
+    else {
+      foodTime[Day][0] = FM1;
+      foodTime[Day][1] = FM2;
+      foodTime[Day][2] = FM3;
+      Blynk.notify("Feed Time is Scheduled");
+    }
+
+    Serial.print("Month is: ");
+    Serial.println(Month);
+    Serial.print("Day is: ");
+    Serial.println(Day);
+    Serial.print("Time is: ");
+    Serial.print(FM1.Hour);
+    Serial.print(":");
+    Serial.println(FM1.Minute);
+    Serial.print("Amount is: ");
+    Serial.println(FM1.Amount);
+
+    Serial.print("Month is: ");
+    Serial.println(Month);
+    Serial.print("Day is: ");
+    Serial.println(Day);
+    Serial.print("Time is: ");
+    Serial.print(FM2.Hour);
+    Serial.print(":");
+    Serial.println(FM2.Minute);
+    Serial.print("Amount is: ");
+    Serial.println(FM2.Amount);
+
+    Serial.print("Month is: ");
+    Serial.println(Month);
+    Serial.print("Day is: ");
+    Serial.println(Day);
+    Serial.print("Time is: ");
+    Serial.print(FM3.Hour);
+    Serial.print(":");
+    Serial.println(FM3.Minute);
+    Serial.print("Amount is: ");
+    Serial.println(FM3.Amount);
+  }
+
+}
+
+// Instant Food Serve
+BLYNK_WRITE(V9) {
+  int buttonState = param.asInt(); // assigning incoming value from pin V1 to a variable
+  if (buttonState == 1) {
+    handleServo(100);
+  }
+
+}
+// Clear alltime
+BLYNK_WRITE(V10) {
+  int buttonState = param.asInt(); // assigning incoming value from pin V1 to a variable
+  struct FoodMeal tempFM;
+  if (buttonState == 1) {
+    foodTime[Day][0] = tempFM;
+    foodTime[Day][1] = tempFM;
+    foodTime[Day][2] = tempFM;
+    Blynk.virtualWrite(V2, tempFM.Hour, tempFM.Minute, 0);
+    Blynk.virtualWrite(V4, tempFM.Hour, tempFM.Minute, 0);
+    Blynk.virtualWrite(V6, tempFM.Hour, tempFM.Minute, 0);
+    Blynk.virtualWrite(V3, 0);
+    Blynk.virtualWrite(V5, 0);
+    Blynk.virtualWrite(V7, 0);
+    Blynk.notify("Scheduled Time is Clear");
+  }
+
+}
+
+
+void handleServo(int amt) {
+  float weight = scale.get_units(10);;
+  if (weight - amt < 0) {
+    Blynk.notify("Not enough food");
+    return ;
+  }
+
+  float afterServe = weight - amt;
+
+  while (true) {
+    weight = scale.get_units(10);
+    Blynk.virtualWrite(V11, weight);
+    if (weight > afterServe) {
+      myservo.write(35);
+      //delay(50);
+    }
+    else {
+      myservo.write(0);
+      break;
+    }
+  }
+}
+
+void setup() {
+  foodServed = false;
+  Serial.begin(9600);
+
+  myservo.attach(2);
+  myservo.write(0);
+  RTC.begin();
+  DateTime now = RTC.now();
+
+  if (! RTC.isrunning()) {
+    Serial.println("RTC is NOT running!");
+    // Set the date and time at compile time
+    RTC.adjust(DateTime(__DATE__, __TIME__));
+  }
+  //RTC.adjust(DateTime(__DATE__, __TIME__)); //removing "//" to adjust the time
+  // The default display shows the date and time
+  scale.begin(SCALE_DOUT_PIN, SCALE_SCK_PIN);
+  //scale.set_scale(LOADCELL_DIVIDER);
+  // scale.set_offset(LOADCELL_OFFSET);
+  scale.set_scale(500.f);                      // this value is obtained by calibrating the scale with known weights; see the README for details
+  scale.tare();
+  //Blynk.virtualWrite(V6, 4000);
+  Blynk.begin(auth, ssid, pass);
+  // You can also specify server:
+  //Blynk.begin(auth, ssid, pass, "blynk-cloud.com", 80);
+  //Blynk.begin(auth, ssid, pass, IPAddress(192,168,1,100), 8080);
+
+
+
+}
+
+void loop() {
+  char Date[16];
+  char Time[16];
+  DateTime now = rtc.now();
+  Serial.print("Day:");
+  Serial.print(now.day(), DEC);
+  Serial.print("   ");
+  Serial.print("Time:");
+  Serial.print(now.hour(), DEC);
+  Serial.print(':');
+  Serial.print(now.minute(), DEC);
+  Serial.print(':');
+  Serial.print(now.second(), DEC);
+  Serial.println();
+  String msg = "        AUTOMATIC PET FEEDER";
+  Blynk.virtualWrite(V12, msg ); // Send time to Display Widget
+  sprintf(Date, "Date: %04d/%02d/%02d", now.year(), now.month(), now.day());
+  sprintf(Time, "Time: %02d:%02d:%02d",  now.hour(), now.minute(), now.second());
+
+  Blynk.virtualWrite(V13, Date);
+  Blynk.virtualWrite(V14, Time);
+  float weight = scale.get_units(10);
+  Serial.println(String(weight, 2));
+  Blynk.virtualWrite(V11, weight);
+  currentTime.Hour = now.hour();
+  currentTime.Minute = now.minute();
+  if (now.month() == Month) {
+
+    if (now.second() == 0) {
+      foodServed = false;
+    }
+
+    for (i = 0; i < 3; ++i) {
+      if (foodTime[now.day()][i] == currentTime) {
+        if (foodServed == false ) {
+          // Call handle servo
+          foodServed = true;
+          handleServo(foodTime[now.day()][i].Amount);
+        }
+      }
+    }
+  }
+  Blynk.run();
+  //delay(2000);
+}
