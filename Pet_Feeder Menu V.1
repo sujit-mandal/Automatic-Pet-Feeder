@@ -1,0 +1,289 @@
+/*************************************************************
+  Download latest Blynk library here:
+    https://github.com/blynkkk/blynk-library/releases/latest
+
+  Blynk is a platform with iOS and Android apps to control
+  Arduino, Raspberry Pi and the likes over the Internet.
+  You can easily build graphic interfaces for all your
+  projects by simply dragging and dropping widgets.
+
+    Downloads, docs, tutorials: http://www.blynk.cc
+    Sketch generator:           http://examples.blynk.cc
+    Blynk community:            http://community.blynk.cc
+    Follow us:                  http://www.fb.com/blynkapp
+                                http://twitter.com/blynk_app
+
+  Blynk library is licensed under MIT license
+  This example code is in public domain.
+
+ *************************************************************
+
+  This example shows how to use the Menu Widget.
+
+  App project setup:
+    Menu widget attached to V1 (put 3 items in it)
+ *************************************************************/
+
+/* Comment this out to disable prints and save space */
+#define BLYNK_PRINT Serial
+
+
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+
+// You should get Auth Token in the Blynk App.
+// Go to the Project Settings (nut icon).
+char auth[] = "c0da13b5a541449fa71d6a99c475874f";
+
+// Your WiFi credentials.
+// Set password to "" for open networks.
+char ssid[] = "Free Wi-Fi";
+char pass[] = "callofduty";
+
+BLYNK_WRITE(V10) {
+  switch (param.asInt())
+  {
+      int pinvalue;
+    case 1: 
+      Serial.println("Item 1 selected");
+      pinvalue = param.asInt();
+      Month=pinvalue;
+      break;
+    case 2: 
+      Serial.println("Item 2 selected");
+      pinvalue = param.asInt();
+      Month=pinvalue;
+      break;
+    case 3: 
+      Serial.println("Item 3 selected");
+      pinvalue = param.asInt();
+      Month=pinvalue;
+      break;
+    case 4: 
+      Serial.println("Item 4 selected");
+      pinvalue = param.asInt();
+      Month=pinvalue;
+      break;
+    case 5:
+      Serial.println("Item 5 selected");
+      pinvalue = param.asInt();
+      Month=pinvalue;
+      break;
+    case 6:
+      Serial.println("Item 6 selected");
+      pinvalue = param.asInt();
+      Month=pinvalue;
+      break;
+    case 7:
+      Serial.println("Item 7 selected");
+      pinvalue = param.asInt();
+      Month=pinvalue;
+      break;
+    case 8: 
+      Serial.println("Item 8 selected");
+      pinvalue = param.asInt();
+      Month=pinvalue;
+      break;
+    case 9: 
+      Serial.println("Item 9 selected");
+      pinvalue = param.asInt();
+      Month=pinvalue;
+      break;
+    case 10:
+      Serial.println("Item 10 selected");
+      pinvalue = param.asInt();
+      Month=pinvalue;
+      break;
+    case 11: 
+      Serial.println("Item 11 selected");
+      pinvalue = param.asInt();
+      Month=pinvalue;
+      break;
+    case 12: 
+      Serial.println("Item 12 selected");
+      pinvalue = param.asInt();
+      Month=pinvalue;
+      break;
+
+    default:
+      Serial.println("Unknown item selected");
+  }
+}
+
+BLYNK_WRITE(V0) {
+  switch (param.asInt())
+  {
+      int pinvalue;
+    case 1:
+      Serial.println("Item 1 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 2:
+      Serial.println("Item 2 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 3:
+      Serial.println("Item 3 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 4:
+      Serial.println("Item 4 selected");
+      pinvalue = param.asInt();
+      break;
+    case 5:
+      Serial.println("Item 5 selected");
+      pinvalue = param.asInt();
+      break;
+    case 6:
+      Serial.println("Item 6 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 7:
+      Serial.println("Item 7 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 8:
+      Serial.println("Item 8 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 9:
+      Serial.println("Item 9 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 10:
+      Serial.println("Item 10 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 11:
+      Serial.println("Item 11 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 12:
+      Serial.println("Item 12 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 13: // Item 3
+      Serial.println("Item 13 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 14:
+      Serial.println("Item 14 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 15:
+      Serial.println("Item 15 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 16:
+      Serial.println("Item 16 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 17:
+      Serial.println("Item 17 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 18:
+      Serial.println("Item 18 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 19:
+      Serial.println("Item 19 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 20:
+      Serial.println("Item 20 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 21:
+      Serial.println("Item 21 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 22:
+      Serial.println("Item 22 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 23:
+      Serial.println("Item 23 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 24:
+      Serial.println("Item 24 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 25:
+      Serial.println("Item 25 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 26:
+      Serial.println("Item 26 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 27:
+      Serial.println("Item 27 selected");
+      pinvalue = param.asInt();
+      break;
+    case 28:
+      Serial.println("Item 28 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 29:
+      Serial.println("Item 29 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 30:
+      Serial.println("Item 30 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+    case 31:
+      Serial.println("Item 31 selected");
+      pinvalue = param.asInt();
+      Day = pinValue;
+      break;
+
+    default:
+      Serial.println("Unknown item selected");
+  }
+}
+
+void setup()
+{
+  // Debug console
+  Serial.begin(9600);
+
+  Blynk.begin(auth, ssid, pass);
+  // You can also specify server:
+  //Blynk.begin(auth, ssid, pass, "blynk-cloud.com", 80);
+  //Blynk.begin(auth, ssid, pass, IPAddress(192,168,1,100), 8080);
+}
+
+void loop()
+{
+  Blynk.run();
+}
