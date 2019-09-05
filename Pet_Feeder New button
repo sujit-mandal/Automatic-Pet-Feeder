@@ -457,6 +457,7 @@ BLYNK_WRITE(V10) {
     }
 
   }
+  //Servo Function
   void handleServo(int amt) {
     float weight = scale.get_units(1);;
     if (weight - amt < 0) {
@@ -470,7 +471,6 @@ BLYNK_WRITE(V10) {
       Blynk.virtualWrite(V11, weight);
       if (weight > afterServe) {
         myservo.write(35);
-        //delay(50);
       }
       else {
         myservo.write(0);
@@ -478,7 +478,7 @@ BLYNK_WRITE(V10) {
       }
     }
   }
-
+//Store Time Display
   void showStoredTime(int DAY) {
     char time1 [40];
     char time2 [40];
@@ -545,7 +545,6 @@ BLYNK_WRITE(V10) {
     Blynk.virtualWrite(V14, Time);
     float weight = scale.get_units(1);
     Serial.println(String(weight, 2));
-    delay(2000);
     Blynk.virtualWrite(V11, weight);
     
     if (temp == HIGH) {
