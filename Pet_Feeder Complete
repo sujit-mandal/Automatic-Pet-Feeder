@@ -153,6 +153,7 @@ BLYNK_WRITE(V1) {
     case 5:
       Serial.println("Item 5 selected");
       pinvalue = param.asInt();
+      Day = pinvalue;
       break;
     case 6:
       Serial.println("Item 6 selected");
