@@ -448,9 +448,11 @@ BLYNK_WRITE(V10) {
     Blynk.notify("Scheduled Time is Clear");
   }
 }
+//Refresh
   BLYNK_WRITE(V15) {
     int buttonState = param.asInt(); // assigning incoming value from pin V1 to a variable
     if (buttonState == 1) {
+      Serial.println("Refresh called");
       showStoredTime(Day);
     }
 
@@ -461,8 +463,8 @@ BLYNK_WRITE(V10) {
       Blynk.notify("Not enough food");
       return ;
     }
-
-    float afterServe = weight - amt;
+    
+    float afterServe = weight - (amt-20);
     while (true) {
       weight = scale.get_units(1);
       Blynk.virtualWrite(V11, weight);
@@ -478,13 +480,15 @@ BLYNK_WRITE(V10) {
   }
 
   void showStoredTime(int DAY) {
-
-    Blynk.virtualWrite(V2, foodTime[DAY][0].Hour, foodTime[DAY][0].Minute, 0);
-    Blynk.virtualWrite(V4, foodTime[DAY][1].Hour, foodTime[DAY][1].Minute, 0);
-    Blynk.virtualWrite(V6, foodTime[DAY][2].Hour, foodTime[DAY][2].Minute, 0);
-    Blynk.virtualWrite(V3, foodTime[DAY][0].Amount );
-    Blynk.virtualWrite(V5, foodTime[DAY][1].Amount);
-    Blynk.virtualWrite(V7, foodTime[DAY][2].Amount);
+    char time1 [40];
+    char time2 [40];
+    char time3 [40];
+    sprintf(time1, "Breakfast Time : %02d:%02d  Amount: %03d", foodTime[DAY][0].Hour,foodTime[DAY][0].Minute,foodTime[DAY][0].Amount );
+    sprintf(time2, "Lunch Time     : %02d:%02d  Amount: %03d", foodTime[DAY][1].Hour,foodTime[DAY][1].Minute,foodTime[DAY][1].Amount );
+    sprintf(time3, "Dinner Time    : %02d:%02d  Amount: %03d", foodTime[DAY][2].Hour,foodTime[DAY][2].Minute,foodTime[DAY][2].Amount );
+    Blynk.virtualWrite(V16, time1);
+    Blynk.virtualWrite(V17, time2);
+    Blynk.virtualWrite(V18, time3);
   }
 
 
@@ -522,7 +526,7 @@ BLYNK_WRITE(V10) {
     char Time[16];
     int temp = digitalRead(button);
     DateTime now = rtc.now();
-    Serial.print("Day:");
+    /*Serial.print("Day:");
     Serial.print(now.day(), DEC);
     Serial.print("   ");
     Serial.print("Time:");
@@ -531,8 +535,8 @@ BLYNK_WRITE(V10) {
     Serial.print(now.minute(), DEC);
     Serial.print(':');
     Serial.print(now.second(), DEC);
-    Serial.println();
-    String msg = "        AUTOMATIC PET FEEDER";
+    Serial.println();*/
+    String msg = "     AUTOMATIC PET FEEDER";
     Blynk.virtualWrite(V12, msg ); // Send time to Display Widget
     sprintf(Date, "Date: %04d/%02d/%02d", now.year(), now.month(), now.day());
     sprintf(Time, "Time: %02d:%02d:%02d",  now.hour(), now.minute(), now.second());
@@ -541,7 +545,9 @@ BLYNK_WRITE(V10) {
     Blynk.virtualWrite(V14, Time);
     float weight = scale.get_units(1);
     Serial.println(String(weight, 2));
+    delay(2000);
     Blynk.virtualWrite(V11, weight);
+    
     if (temp == HIGH) {
       handleServo(50);
     }
